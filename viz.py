@@ -87,44 +87,7 @@ title(fig, 'Two and a half centuries of rice prices', 'Price spikes line up with
 plt.subplots_adjust(left=.07, right=.985, top=.8, bottom=.1)
 fig.savefig('out/assets/timeline_edo.png', facecolor=PAPER); plt.close(fig)
 
-# ------------------------------------------------------------------ 3. scatter-plot matrix
-V = [('rice_shock', 'Rice price shock\n(log vs 11-year median)'), ('summer_wet_z', 'Wet summer\n(diary z-score)'),
-     ('osaka_level', 'Osaka price level\n(log monme)'), ('notable_uprisings', 'Notable uprisings\n(per year)')]
-d = an.copy(); d['osaka_level'] = np.log(d.rice_osaka_monme)
-d = d.dropna(subset=['rice_shock', 'summer_wet_z'])
-fam = d.famine.notna()
-rng = np.random.default_rng(7)
-k = len(V)
-fig, axs = plt.subplots(k, k, figsize=(10, 10))
-for i, (vi, li) in enumerate(V):
-    for j, (vj, lj) in enumerate(V):
-        ax = axs[i, j]
-        x, y = d[vj].astype(float), d[vi].astype(float)
-        if vj == 'notable_uprisings': x = x + rng.uniform(-.15, .15, len(x))
-        if vi == 'notable_uprisings': y = y + rng.uniform(-.15, .15, len(y))
-        if i == j:
-            vals = d[vi].dropna().astype(float)
-            lo, hi = vals.min(), vals.max(); pad = (hi - lo) * .06
-            ax.set_ylim(lo - pad, hi + pad); ax.set_xlim(lo - pad, hi + pad)
-            hx = ax.twinx(); hx.set_yticks([]); hx.spines[['top', 'right', 'left']].set_visible(False)
-            edges = np.histogram_bin_edges(vals, 18)
-            hx.hist(vals, bins=edges, color=LIGHT, edgecolor=PAPER)
-            hx.hist(d.loc[fam, vi].dropna().astype(float), bins=edges, color=RED, alpha=.85, edgecolor=PAPER)
-        else:
-            ax.scatter(x[~fam], y[~fam], s=9, c=MID, alpha=.55, lw=0)
-            ax.scatter(x[fam], y[fam], s=16, c=RED, alpha=.9, lw=0)
-            m = x.notna() & y.notna()
-            r = np.corrcoef(x[m], y[m])[0, 1]
-            ax.text(.04, .9, f'r = {r:.2f}', transform=ax.transAxes, fontsize=7.5, color=BLUE)
-        ax.tick_params(labelsize=6.5, length=2)
-        if i < k - 1: ax.set_xticklabels([])
-        if j > 0: ax.set_yticklabels([])
-        if i == k - 1: ax.set_xlabel(lj, fontsize=8)
-        if j == 0: ax.set_ylabel(li, fontsize=8)
-        ax.spines[['top', 'right']].set_visible(False)
-title(fig, 'What moves with what, year by year', f'{len(d)} years with both price and diary data. Red: famine years. r: Pearson correlation.', y=.965)
-plt.subplots_adjust(left=.1, right=.98, top=.9, bottom=.08, wspace=.08, hspace=.08)
-fig.savefig('out/assets/scatter_matrix.png', facecolor=PAPER); plt.close(fig)
+# ------------------------------------------------------------------ 3. scatter-plot matrix: made by correlations.py, with r, confidence intervals and p-values
 
 # ------------------------------------------------------------------ 4. causes of the notable uprisings
 cg = up.cause_group.value_counts().sort_values()
