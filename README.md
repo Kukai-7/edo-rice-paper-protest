@@ -8,6 +8,8 @@
 
 ![Rice, paper and protest in Edo Japan](https://huggingface.co/datasets/Kukai-7/edo-rice-paper-protest/resolve/main/assets/map_edo.png)
 
+*Reading the map: red dots are the 50 notable uprisings (named ones labelled with their year), blue squares the 33 domains whose paper notes are described, triangles the 13 weather diaries. Uprisings spread across the country; paper money clusters around Osaka.*
+
 ## At a glance
 
 | | |
@@ -23,6 +25,8 @@
 
 ![Two and a half centuries of rice prices](https://huggingface.co/datasets/Kukai-7/edo-rice-paper-protest/resolve/main/assets/timeline_edo.png)
 
+*Reading the chart: rice prices on a log scale, so equal heights mean equal percentage moves. Red bands are the five great famines, the blue band the 1707 to 1730 ban on domain notes, red ticks at the bottom the notable uprisings. Price spikes sit inside the famine bands; the ticks do not cluster there.*
+
 - **Rice prices follow the weather, not the other way round.** In the 23 years of the five great famines, prices sit about 17% above their local trend on average, against about 1% in other years, and the diaries record wetter summers (z-score +0.26). Cool, rainy summers ruin the harvest, then prices jump.
 - **The notable uprisings do not follow prices.** Years with an uprising show a slightly higher price shock (+5% against +2%), but the difference is not significant (Mann-Whitney p = 0.90) and the yearly correlation is 0.06. Only 4 of the 50 uprisings fall in famine years, about what chance alone would give.
 - **People rose against the lord's demands.** Thirty of the 50 uprisings were about taxes and levies; only five were about famine or the price of rice. The usual reading of the period, that protest targeted the fiscal squeeze of domains rather than the market, holds in this small sample.
@@ -30,9 +34,48 @@
 
 ![What moves with what, year by year](https://huggingface.co/datasets/Kukai-7/edo-rice-paper-protest/resolve/main/assets/scatter_matrix.png)
 
+*Reading the chart: see "Reading the correlations" below. The only links that hold are between prices and weather; the uprising row is flat.*
+
 ![What the uprisings were about](https://huggingface.co/datasets/Kukai-7/edo-rice-paper-protest/resolve/main/assets/causes.png)
 
+*Reading the chart: the main grievance of each uprising, as given in its article. Taxes and levies dominate; famine and prices come a distant second.*
+
 ![Two centuries of summer weather, from diaries](https://huggingface.co/datasets/Kukai-7/edo-rice-paper-protest/resolve/main/assets/diaries_heatmap.png)
+
+*Reading the chart: each row is a diary, north at the top; darker cells are decades with a larger share of rainy summer days. Some writers simply noted rain more often (Nikko, Hachioji), which is why the annual index is standardised station by station.*
+
+## Reading the correlations
+
+**How to read r.** Pearson's r measures how closely two variables move along a straight line: +1 is a perfect positive line, 0 no linear link, -1 a perfect negative line. r² is the share of the variance of one variable that a straight line on the other accounts for (r = 0.7 means about half). The labels used here: under 0.1 negligible, 0.1 to 0.3 weak, 0.3 to 0.5 moderate, 0.5 to 0.7 strong, 0.7 and above very strong.
+
+**How sure is it?** The 95% confidence interval gives the range of r compatible with the data; when it excludes zero, p is below 0.05 and the link is distinguishable from chance. Strength and certainty are different things: a weak r can be certain with many observations, and a strong r can be uncertain with few. Spearman's ρ repeats the exercise on ranks, so a large gap between r and ρ points to outliers or a curved relationship.
+
+**Yearly changes.** Two series that both trend upward will correlate even if they are unrelated. The last column correlates the year-on-year changes instead, which removes shared trends: a link that survives in changes is more convincing than one that exists only in levels.
+
+In the scatter-plot matrix (`scatter_matrix.png`), the panels below the diagonal show the points with a least-squares line, the diagonal shows each distribution, and the panels above the diagonal give r, its 95% confidence interval, p and n for the pair in that row and column. A figure is in colour only when p < 0.05.
+
+**What stands out**
+
+- **Prices and weather move together, and the link survives in yearly changes.** The price shock correlates at +0.24 with wet summers (95% CI +0.10 to +0.36, 207 years), and at +0.34 when both are taken as year-on-year changes. Weak but clearly real: rain explains a small part of price swings, and famines the large ones.
+- **Uprisings are unrelated to prices and weather.** All three correlations with the yearly count of notable uprisings are below 0.07 in absolute value, with intervals that straddle zero. This is the central finding of the dataset, and it is a negative one.
+- **The +0.75 between the shock and the Osaka price level is partly built in**: the shock is computed from prices that include Osaka. Read it as a check of the series, not as a finding.
+
+**All pairs**, sorted by the size of r. The same figures are in the `correlations` configuration.
+
+| Pair | r | 95% CI | p | n | Spearman ρ | r of yearly changes | Reading |
+|---|---|---|---|---|---|---|---|
+| Rice price shock (log vs 11-year median) × Osaka price level (log monme) | **+0.75** | +0.67 to +0.81 | < 0.001 | 167 | +0.64 | +0.87 (p < 0.001) | very strong, positive; distinguishable from zero |
+| Rice price shock (log vs 11-year median) × Wet summer (diary z-score) | **+0.24** | +0.10 to +0.36 | < 0.001 | 207 | +0.21 | +0.34 (p < 0.001) | weak, positive; distinguishable from zero |
+| Wet summer (diary z-score) × Osaka price level (log monme) | **+0.10** | -0.06 to +0.24 | 0.22 | 167 | +0.14 | +0.28 (p < 0.001) | negligible; not distinguishable from zero |
+| Wet summer (diary z-score) × Notable uprisings (per year) | **-0.07** | -0.20 to +0.07 | 0.35 | 207 | -0.07 | -0.01 (p = 0.86) | negligible; not distinguishable from zero |
+| Rice price shock (log vs 11-year median) × Notable uprisings (per year) | **+0.05** | -0.08 to +0.19 | 0.44 | 207 | -0.01 | +0.08 (p = 0.27) | negligible; not distinguishable from zero |
+| Osaka price level (log monme) × Notable uprisings (per year) | **+0.02** | -0.13 to +0.17 | 0.79 | 167 | -0.02 | +0.05 (p = 0.49) | negligible; not distinguishable from zero |
+
+**What it does not say**
+
+- Fifty uprisings are a small, non-random sample; a full chronology could show a price link that this one cannot.
+- Annual correlations miss lags: a bad harvest may lead to protest one or two years later.
+- No correlation here identifies a cause.
 
 ## Load it
 
@@ -75,6 +118,10 @@ annual.groupby(annual.famine.notna()).rice_shock.mean()
 
 For each station and month: days in the month, days recorded, and the number of days of each kind of weather noted in the diary (fine, partly cloudy, cloudy, shower, thunderstorm, heavy thunderstorm, little rain, rain, heavy rain, hail, snow shower, little snow, snow), plus `rain_days` and `snow_days`. `stations` gives position, diary type (official, private, farmhouse) and years covered.
 
+### `correlations`, 6 rows
+
+One row per pair of variables in the scatter-plot matrix: `x`, `y` and their labels, `n`, `pearson_r`, `r_squared`, `ci95_low`, `ci95_high` (Fisher z interval), `p_value` (two-sided t test), `spearman_rho`, `strength`, `direction`, and for annual series `n_changes`, `pearson_r_changes` and `p_value_changes`, the same correlation on year-on-year differences. Made by `correlations.py`.
+
 ## How it was built
 
 1. **Rice prices.** Iwahashi Masaru's annual series (*Kinsei Nihon bukka-shi no kenkyū*, Ōhara Shinseisha, 1981, appendix table 1), compiled by Osamu Saito for the [Global Price and Income History Group](https://gpih.ucdavis.edu/Datafilelist.htm). Most are domain or account-book prices rather than market quotes; Osaka, Otsu and Banshu are market series.
@@ -82,7 +129,7 @@ For each station and month: days in the month, days recorded, and the number of 
 3. **Uprisings.** The list of notable uprisings in the Japanese Wikipedia article *一揆* and the pages of *Category:一揆*, 1603 to 1867, with duplicates merged. Province, domain, grievance and an English summary were written for this dataset from each article's lead; positions are the domain seat or district named there.
 4. **Paper money.** The section *各藩の状況* of the Japanese Wikipedia article *藩札*, one row per domain; castle positions from Wikidata, or set by hand for twelve small domains.
 5. **Annual panel.** Deviations from an 11-year centred median isolate short shocks from long inflation, including the currency debasements of the 1690s and the 1860s.
-6. **Charts.** Python and Matplotlib; coastline from Natural Earth. The full pipeline is in [`code/`](./).
+6. **Charts.** Python and Matplotlib; coastline from Natural Earth. The full pipeline is in [`code/`](./). The correlation figures come from `correlations.py`, which reads only the published Parquet files.
 
 ## Limitations
 
